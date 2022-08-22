@@ -22,6 +22,28 @@ class Update:
     cont_market_loan_val: float
 
 
+# Interest calculators to test
+
+
+def calc_exp_interest(util: float, rate_modifier: float) -> float:
+    return rate_modifier * ((util) ** 2)
+
+
+def calc_piecewise_exp_interest(target: float, util: float, rate_modifier: float) -> float:
+    base_ir = 0.0
+    if util <= target:
+        base_ir = 0.01 + util / target * 0.03  # 4% IR at util
+    else:
+        # util is greater than target
+        base_ir = 0.04 + (((util - target) / (1 - target)) ** 3)
+    final_ir = base_ir * rate_modifier
+    # print("target  :", target)
+    # print("util    :", util)
+    # print("rate_mod:", rate_modifier)
+    # print("final_ir:", final_ir)
+    return final_ir
+
+
 class PoolToken:
     """
     Simplified pool token that calculates a dynamic interest rate
@@ -41,7 +63,7 @@ class PoolToken:
         self.reactivity: float = reactivity
         self.util_rate: float = initial_util
         self.ir: float = initial_rate
-        self.last_rate_modifier: float = initial_rate / (initial_util**2)
+        self.last_rate_modifier: float = initial_rate / calc_piecewise_exp_interest(target_util, initial_util, 1)
         self.last_update_block: int = chain.block_num
         self.last_update_timestamp: int = chain.timestamp
         self.market_rate: float = market_rate
@@ -55,9 +77,9 @@ class PoolToken:
         # calculate the rate modifier
         block_dif = self.chain.block_num - self.last_update_block
         util_rate_error = block_dif * (next_util - self.target_util)
-        next_rate_modifier = util_rate_error * self.reactivity + self.last_rate_modifier
+        next_rate_modifier = max(util_rate_error * self.reactivity + self.last_rate_modifier, 0)
         # TODO: Add bounds to next rate modifier
-        next_ir = next_rate_modifier * (next_util**2)
+        next_ir = calc_piecewise_exp_interest(self.target_util, next_util, next_rate_modifier)
 
         # accrue interest to examples
         next_example_loan = self.example_loan * (1 + self.ir * (block_dif / BLOCKS_PER_YEAR))

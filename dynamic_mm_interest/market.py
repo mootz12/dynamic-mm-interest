@@ -19,7 +19,14 @@ class Market:
         rate_dif = market_rate - self.pool_token.ir
         # rate_dif is negative if the rate is too high
         # which will mean util_effect is likely negative (withdraw) and vice versa
-        util_effect = random.gauss(rate_dif / 10, 0.005)
+        util_effect = random.gauss(rate_dif / 10, 0.0033)
+        # print("----- setting next util -----")
+        # print("cur util   :", self.pool_token.util_rate)
+        # print("cur ir     :", self.pool_token.ir)
+        # print("cur mod    :", self.pool_token.last_rate_modifier)
+        # print("rate dif   :", rate_dif)
+        # print("util effect:", util_effect)
+        # print("next util  :", max(min(self.pool_token.util_rate + util_effect, 0.99), 0.01))
         self.pool_token.update(max(min(self.pool_token.util_rate + util_effect, 0.99), 0.01), market_rate)
 
     def graph_results(self) -> None:
@@ -54,12 +61,6 @@ class Market:
             util_series.append(update.util_rate)
             # extra
             rate_mod_series.append(update.rate_modifier)
-
-        # Log final loan amounts
-        print("Real Loan-------: ", loan_series[len(loan_series) - 1])
-        print("Cont Real Loan--: ", cont_loan_series[len(cont_loan_series) - 1])
-        print("Market Loan-----: ", market_loan_series[len(market_loan_series) - 1])
-        print("Cont Market Loan: ", cont_market_loan_series[len(cont_market_loan_series) - 1])
 
         # Graphs interest rates, loan values, and utilization rates
         fig, axs = plt.subplots(3, 1)
