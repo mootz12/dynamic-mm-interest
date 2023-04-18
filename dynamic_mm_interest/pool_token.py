@@ -30,18 +30,18 @@ def calc_exp_interest(util: float, rate_modifier: float) -> float:
 
 
 def calc_piecewise_exp_interest(target: float, util: float, rate_modifier: float) -> float:
-    base_ir = 0.0
+    r_0 = 0.01
+    r_1 = 0.05
+    r_2 = 0.5
+    r_3 = 1.5
+    ir = 0.0
     if util <= target:
-        base_ir = 0.01 + util / target * 0.03  # 4% IR at util
+        ir = rate_modifier * (r_0 + (util / target) * r_1)
+    elif util <= 0.95:
+        ir = rate_modifier * (r_0 + r_1 + ((util - target) / (0.95 - target)) * r_2)
     else:
-        # util is greater than target
-        base_ir = 0.04 + (((util - target) / (1 - target)) ** 3)
-    final_ir = base_ir * rate_modifier
-    # print("target  :", target)
-    # print("util    :", util)
-    # print("rate_mod:", rate_modifier)
-    # print("final_ir:", final_ir)
-    return final_ir
+        ir = rate_modifier * (r_0 + r_1 + r_2) + ((util - 0.95) / (0.05)) * r_3
+    return ir
 
 
 class PoolToken:

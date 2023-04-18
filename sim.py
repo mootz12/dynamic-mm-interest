@@ -8,10 +8,10 @@ from dynamic_mm_interest.chain import Chain
 from dynamic_mm_interest.pool_token import PoolToken
 from dynamic_mm_interest.market import Market
 
-TARGET_IR: float = 0.10
+TARGET_IR: float = 0.05
 TARGET_UTIL: float = 0.75
-REACTIVITY_CONST: float = 0.003
-MARKET_CHANCE: float = 0.02
+REACTIVITY_CONST: float = 0.00002
+MARKET_CHANCE: float = 0.00002
 
 print("Starting sim")
 
@@ -23,12 +23,13 @@ print("Objects built...")
 
 ### quick spike test
 
-# ~ 5 days each
-# for i in range(0, 1_051_20):
+# # ~ 7 days
+# for i in range(0, 120960):
 #     market.sim_block(MARKET_CHANCE, 0.1)
 
-# for i in range(0, 1_051_20):
-#     market.sim_block(MARKET_CHANCE, 1)
+# # 21 days
+# for i in range(0, 120960 * 3):
+#     market.sim_block(MARKET_CHANCE, 2)
 
 ### stale rate drop test
 
@@ -40,13 +41,13 @@ for i in range(0, 1_051_200):
     market.sim_block(MARKET_CHANCE, 0.02)
 
 for i in range(0, 1_051_200):
-    market.sim_block(MARKET_CHANCE, 0.20)
+    market.sim_block(MARKET_CHANCE, 0.08)
 
 for i in range(0, 1_051_200):
-    market.sim_block(MARKET_CHANCE, 0.20)
+    market.sim_block(MARKET_CHANCE, 0.15)
 
 for i in range(0, 1_051_200):
-    market.sim_block(MARKET_CHANCE, 0.20)
+    market.sim_block(MARKET_CHANCE, 0.15)
 
 # check reaction here
 for i in range(0, 1_051_200):
